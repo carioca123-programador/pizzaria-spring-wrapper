@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho - Pizzaria dos Maxes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      color: #333;
+      text-align: center;
+    }
+
+    header {
+      background: linear-gradient(90deg, #b71c1c, #c62828);
+      color: white;
+      padding: 16px;
+      font-size: 22px;
+      font-weight: bold;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      color: #c62828;
+      margin-top: 24px;
+      font-size: 28px;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      font-size: 16px;
+    }
+
+    th {
+      background-color: #c62828;
+      color: white;
+      padding: 12px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background: #f9f9f9;
+    }
+
+    button {
+      background: #c62828;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 17px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      margin: 20px 10px;
+    }
+
+    button:hover {
+      background: #e53935;
+      transform: translateY(-2px);
+    }
+
+    .empty {
+      color: #777;
+      margin-top: 30px;
+      font-size: 18px;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>🛒 Carrinho de Compras — Pizzaria dos Maxes</header>
+
+  <main>
+    <h1>Seus Itens</h1>
+
+    <table id="tabela-carrinho">
+      <thead>
+        <tr><th>Item</th><th>Preço</th></tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr><td>Total</td><td id="total">R$ 0,00</td></tr>
+      </tfoot>
+    </table>
+
+    <p class="empty" id="vazio" style="display:none;">Seu carrinho está vazio 😕</p>
+
+    <button id="continuar">← Voltar ao Cardápio</button>
+    <button id="finalizar">Finalizar Pedido</button>
+  </main>
+
+  <footer>© 2025 Pizzaria dos Maxes • Sabor que conquista 🍕</footer>
+
+  <script>
+    // Recupera o carrinho salvo
+    const carrinho = JSON.parse(localStorage.getItem("carrinho") || "[]");
+    const tbody = document.querySelector("tbody");
+    const vazio = document.getElementById("vazio");
+    let total = 0;
+
+    if (carrinho.length === 0) {
+      document.getElementById("tabela-carrinho").style.display = "none";
+      vazio.style.display = "block";
+    } else {
+      carrinho.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.nome}</td><td>R$ ${item.preco.toFixed(2)}</td>`;
+        tbody.appendChild(tr);
+        total += item.preco;
+      });
+      document.getElementById("total").textContent = `R$ ${total.toFixed(2)}`;
+    }
+
+    // Botão voltar
+    document.getElementById("continuar").onclick = () => {
+      window.location.href = "estoque.html";
+    };
+
+    // Finalizar pedido → redirecionar para pagamento
+    document.getElementById("finalizar").onclick = () => {
+      if (carrinho.length === 0) {
+        alert("Seu carrinho está vazio!");
+        return;
+      }
+      // Salva o total para usar na página de pagamento
+      localStorage.setItem("valorTotal", total.toFixed(2));
+      window.location.href = "pagamento.html";
+    };
+  </script>
+</body>
+</html>

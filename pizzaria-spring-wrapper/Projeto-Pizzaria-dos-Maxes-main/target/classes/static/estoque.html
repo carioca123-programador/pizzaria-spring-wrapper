@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pizzaria dos Maxes - Cardápio</title>
+  <style>
+    :root{
+      --accent: #c62828;
+      --card-bg: #ffffff;
+      --muted: #666;
+      --max-width: 1200px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color:#efefef;
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* header */
+    header{
+      background: linear-gradient(90deg, rgba(198,40,40,1), rgba(170,30,30,1));
+      color:white;
+      padding:14px 18px;
+      position:sticky;
+      top:0;
+      z-index:100;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand img{
+      width:52px;
+      height:52px;
+      border-radius:8px;
+      object-fit:cover;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+    .brand h1{
+      font-size:20px;
+      margin:0;
+      letter-spacing:0.6px;
+    }
+
+    nav a{
+      color:white;
+      text-decoration:none;
+      font-weight:700;
+      margin-left:12px;
+      padding:8px 12px;
+      border-radius:8px;
+      transition: background .12s ease, transform .12s ease;
+    }
+    nav a:hover{ transform:translateY(-3px); background: rgba(255,255,255,0.06); }
+
+    /* page area */
+    main{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:0 18px 80px;
+    }
+
+    .hero{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+      padding:18px;
+      border-radius:10px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+      margin-bottom:20px;
+    }
+    .hero .left{
+      flex:1 1 auto;
+    }
+    .hero h2{ margin:0 0 6px 0; font-size:24px; }
+    .hero p{ margin:0; color:var(--muted); }
+
+    .hero .cta{
+      min-width:220px;
+      text-align:right;
+    }
+    .hero .cta .info{
+      background:var(--card-bg);
+      padding:10px 12px;
+      border-radius:8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .hero .cta .info small{ color:var(--muted); }
+
+    /* sections */
+    section{
+      margin-top:18px;
+    }
+    .section-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .section-header h3{ margin:0; font-size:18px; }
+    .grid{
+      display:grid;
+      gap:16px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .card{
+      background:var(--card-bg);
+      border-radius:10px;
+      overflow:hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: transform .16s ease, box-shadow .16s ease;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+    }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.10); }
+
+    .card .thumb{
+      width:100%;
+      height:170px;
+      background-position:center;
+      background-size:cover;
+      flex-shrink:0;
+    }
+    .card .body{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      flex:1 1 auto;
+    }
+    .card .name{ font-weight:800; font-size:15px; color:#111; }
+    .card .desc{ font-size:13px; color:var(--muted); margin-top:4px; flex:1 1 auto; }
+    .card .price{ font-weight:900; color:var(--accent); font-size:16px; margin-top:8px; }
+
+    /* responsive */
+    @media (max-width:1100px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width:760px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+      .hero{ flex-direction:column; align-items:flex-start; }
+      nav a{ margin-left:8px; padding:8px 10px; }
+    }
+    @media (max-width:420px){
+      .grid{ grid-template-columns: 1fr; }
+      .brand h1{ font-size:16px; }
+      .hero .cta{ width:100%; text-align:left; }
+    }
+
+    /* small footer */
+    footer{ text-align:center; color:#777; margin-top:28px; font-size:13px; }
+
+    /* anchor offset for sticky header */
+    .anchor-offset{ scroll-margin-top:86px; }
+
+    /* utility */
+    .btn-outline{
+      padding:8px 12px;
+      border-radius:8px;
+      border:2px solid rgba(0,0,0,0.06);
+      background:transparent;
+      font-weight:700;
+    }
+  </style>
+
+  <script>
+    // adiciona item no localStorage
+    function adicionarItem(nome, preco){
+      try{
+        let carrinho = JSON.parse(localStorage.getItem("carrinho") || "[]");
+        carrinho.push({nome: nome, preco: Number(preco)});
+        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        // feedback elegante
+        showToast(nome + " adicionado ao carrinho");
+      }catch(e){
+        alert(nome + " adicionado ao carrinho");
+      }
+    }
+
+    // toast simples
+    function showToast(msg){
+      const t = document.createElement('div');
+      t.innerText = msg;
+      t.style.position = 'fixed';
+      t.style.right = '18px';
+      t.style.bottom = '18px';
+      t.style.background = '#111';
+      t.style.color = 'white';
+      t.style.padding = '10px 14px';
+      t.style.borderRadius = '8px';
+      t.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+      t.style.zIndex = 9999;
+      t.style.opacity = '0';
+      t.style.transition = 'opacity .18s ease, transform .18s ease';
+      document.body.appendChild(t);
+      requestAnimationFrame(()=>{ t.style.opacity = '1'; t.style.transform = 'translateY(-6px)'; });
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(0)'; }, 1400);
+      setTimeout(()=> t.remove(), 1800);
+    }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="brand">
+        <img src="https://i.imgur.com/jvaAEng.jpeg" alt="logo">
+        <div>
+          <h1>Pizzaria dos Maxes</h1>
+          <div style="font-size:12px; color:rgba(255,255,255,0.92); margin-top:3px;">Sabor que conquista</div>
+        </div>
+      </div>
+
+      <nav aria-label="principal">
+        <a href="#pizzas">PIZZAS</a>
+        <a href="#bebidas">BEBIDAS</a>
+        <a href="#sobremesas">SOBREMESAS</a>
+        <a href="carrinho.html" style="background:rgba(255,255,255,0.12); padding:8px 12px; border-radius:8px; font-weight:800;">CARRINHO (ver)</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="left">
+        <h2>Cardápio — Pizzas, bebidas e sobremesas</h2>
+        <p>Fotos em estilo comercial, preços no padrão delivery. Clique no item para adicionar ao carrinho.</p>
+      </div>
+      <div class="cta">
+        <div class="info">
+          <strong>Aberto hoje</strong><br>
+          <small style="color:var(--muted)">Entrega 18:00 — 00:00 • Tempo médio 35–50 min</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIZZAS -->
+    <section id="pizzas" class="anchor-offset">
+      <div class="section-header">
+        <h3>Pizzas — 10 opções</h3>
+        <div style="color:var(--muted)">Clique em uma pizza para adicionar ao carrinho</div>
+      </div>
+
+      <div class="grid" role="list">
+        <!-- 1 Calabresa -->
+        <article class="card" role="listitem" onclick="adicionarItem('Calabresa',59.90)">
+          <div class="thumb" style="background-image:url('https://cantinagiovannifreddo.com.br/wp-content/uploads/2023/09/PIZZA-DE-CALABRESA.webp')"></div>
+          <div class="body">
+            <div class="name">Calabresa</div>
+            <div class="desc">Molho de tomate, mussarela e calabresa fatiada.</div>
+            <div class="price">R$ 59,90</div>
+          </div>
+        </article>
+
+        <!-- 2 Pepperoni -->
+        <article class="card" role="listitem" onclick="adicionarItem('Pepperoni',69.90)">
+          <div class="thumb" style="background-image:url('https://www.seara.com.br/wp-content/uploads/2025/09/pizza-de-pepperoni-caseira-portal-minha-receita.jpg')"></div>
+          <div class="body">
+            <div class="name">Pepperoni</div>
+            <div class="desc">Pepperoni crocante, mussarela e finalização com orégano.</div>
+            <div class="price">R$ 69,90</div>
+          </div>
+        </article>
+
+        <!-- 3 Portuguesa -->
+        <article class="card" role="listitem" onclick="adicionarItem('Portuguesa',64.90)">
+          <div class="thumb" style="background-image:url('https://receitasde.com.br/wp-content/uploads/2024/07/Pizza-Portuguesa.jpg')"></div>
+          <div class="body">
+            <div class="name">Portuguesa</div>
+            <div class="desc">Presunto, ovos, cebola, azeitonas e mussarela.</div>
+            <div class="price">R$ 64,90</div>
+          </div>
+        </article>
+
+        <!-- 4 Frango com Catupiry -->
+        <article class="card" role="listitem" onclick="adicionarItem('Frango com Catupiry',66.90)">
+          <div class="thumb" style="background-image:url('https://media-cdn.tripadvisor.com/media/photo-s/11/eb/36/f1/brazilian-pizza-frango.jpg')"></div>
+          <div class="body">
+            <div class="name">Frango com Catupiry</div>
+            <div class="desc">Frango desfiado, catupiry cremoso e ervas finas.</div>
+            <div class="price">R$ 66,90</div>
+          </div>
+        </article>
+
+        <!-- 5 4 Queijos -->
+        <article class="card" role="listitem" onclick="adicionarItem('Quatro Queijos',74.90)">
+          <div class="thumb" style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI8PJHV4tPOQ7ZH3O5hOeiQZzay43FgTPixK9gdZ-WlPDggWmpeaIQZN09Q7GnWr7w78U&usqp=CAU')"></div>
+          <div class="body">
+            <div class="name">Quatro Queijos</div>
+            <div class="desc">Blend de queijos especiais, massa crocante.</div>
+            <div class="price">R$ 74,90</div>
+          </div>
+        </article>
+
+        <!-- 6 Marguerita -->
+        <article class="card" role="listitem" onclick="adicionarItem('Marguerita',61.90)">
+          <div class="thumb" style="background-image:url('https://guiadacozinha.com.br/wp-content/uploads/2007/01/Pizza-marguerita-caseira.webp')"></div>
+          <div class="body">
+            <div class="name">Marguerita</div>
+            <div class="desc">Molho San Marzano, mussarela de búfala e manjericão.</div>
+            <div class="price">R$ 61,90</div>
+          </div>
+        </article>
+
+        <!-- 7 Vegetariana -->
+        <article class="card" role="listitem" onclick="adicionarItem('Vegetariana',58.90)">
+          <div class="thumb" style="background-image:url('https://s2-receitas.glbimg.com/sP3pVF5XK9N8N_0U2g-gdvPhkyw=/0x0:620x413/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_e84042ef78cb4708aeebdf1c68c6cbd6/internal_photos/bs/2021/A/V/03IHABTT2ZNMQzXZD4mQ/pizza-vegetariana.jpg')"></div>
+          <div class="body">
+            <div class="name">Vegetariana</div>
+            <div class="desc">Legumes grelhados, tomate-cereja e queijo.</div>
+            <div class="price">R$ 58,90</div>
+          </div>
+        </article>
+
+        <!-- 8 4 Estações -->
+        <article class="card" role="listitem" onclick="adicionarItem('4 Estações',72.90)">
+          <div class="thumb" style="background-image:url('https://encomendas.ao/wp-content/uploads/2020/12/pizza-4-estacoes-2.jpg')"></div>
+          <div class="body">
+            <div class="name">4 Estações</div>
+            <div class="desc">Quatro coberturas clássicas em uma só pizza.</div>
+            <div class="price">R$ 72,90</div>
+          </div>
+        </article>
+
+        <!-- 9 Pizza Mussarela -->
+        <article class="card" role="listitem" onclick="adicionarItem('Pizza Mussarela',59.90)">
+          <div class="thumb" style="background-image:url('https://pizzafacil.ind.br/website2018/wp-content/uploads/2018/04/pizza-mussarela.jpg')"></div>
+          <div class="body">
+            <div class="name">Mussarela</div>
+            <div class="desc">Molho de Tomate, Queijo Mussarela e Oregano.</div>
+            <div class="price">R$ 59,90</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- BEBIDAS -->
+    <section id="bebidas" class="anchor-offset">
+      <div class="section-header">
+        <h3>Bebidas</h3>
+        <div style="color:var(--muted)">Refrigerantes, suco, água e energético</div>
+      </div>
+
+      <div class="grid" style="grid-template-columns: repeat(5, 1fr);">
+        <article class="card" role="listitem" onclick="adicionarItem('Coca-Cola 2L',14.90)">
+          <div class="thumb" style="background-image:url('https://demo11.webbvendas.com.br/_core/_uploads/148/2024/03/1156310324if58icfghg.jpg')"></div>
+          <div class="body">
+            <div class="name">Coca-Cola 2L</div>
+            <div class="desc">Refrescante e irresistível! </div>
+            <div class="price">R$ 14,90</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Guaraná Antarctica 2L',12.50)">
+          <div class="thumb" style="background-image:url('https://carrefourbrfood.vtexassets.com/arquivos/ids/106437073/refrigerante-guarana-antarctica-garrafa-2l-3.jpg?v=638144885951370000')"></div>
+          <div class="body">
+            <div class="name">Guaraná Antarctica 2L</div>
+            <div class="desc">Sabor clássico brasileiro.</div>
+            <div class="price">R$ 12,50</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Suco de Laranja 300ml',9.90)">
+          <div class="thumb" style="background-image:url('https://image.tuasaude.com/media/article/go/jh/suco-de-laranja_67324.jpg?width=686&height=487')"></div>
+          <div class="body">
+            <div class="name">Suco de Laranja 300ml</div>
+            <div class="desc">Suco natural espremido.</div>
+            <div class="price">R$ 9,90</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Água Mineral 500ml',5.50)">
+          <div class="thumb" style="background-image:url('https://changlee.com.br/wp-content/uploads/2016/12/imagem_destaque_19-600x428.jpeg')"></div>
+          <div class="body">
+            <div class="name">Água Mineral 500ml</div>
+            <div class="desc">Sem gás / com gás disponível.</div>
+            <div class="price">R$ 5,50</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Energético 250ml',13.90)">
+          <div class="thumb" style="background-image:url('https://d21wiczbqxib04.cloudfront.net/m1rtsh9EHWxNFO130UPyaZ18dT4=/fit-in/400x400/filters:fill(FFFFFF):background_color(white)/https://produtos-osuper.s3.sa-east-1.amazonaws.com/18031.jpg')"></div>
+          <div class="body">
+            <div class="name">Energético 250ml</div>
+            <div class="desc">Perfeito para acompanhar a noite.</div>
+            <div class="price">R$ 13,90</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SOBREMESAS -->
+    <section id="sobremesas" class="anchor-offset">
+      <div class="section-header">
+        <h3>Sobremesas</h3>
+        <div style="color:var(--muted)">Doces para finalizar a refeição</div>
+      </div>
+
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+        <article class="card" role="listitem" onclick="adicionarItem('Taça de Sorvete',14.90)">
+          <div class="thumb" style="background-image:url('https://media-cdn.tripadvisor.com/media/photo-m/1280/18/58/1b/d6/taca-com-duas-bolas-de.jpg')"></div>
+          <div class="body">
+            <div class="name">Taça de Sorvete</div>
+            <div class="desc">2 bolas com calda e chantilly.</div>
+            <div class="price">R$ 14,90</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Brownie com Sorvete',18.90)">
+          <div class="thumb" style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsXylTbqJpoQEWexrnIrO37Z9G2mf-W9QpzKJPqU3pBHhZxpM3wU93NZu_RnMfoPJOWVg&usqp=CAU')"></div>
+          <div class="body">
+            <div class="name">Brownie com Sorvete</div>
+            <div class="desc">Brownie quentinho com bola de sorvete.</div>
+            <div class="price">R$ 18,90</div>
+          </div>
+        </article>
+
+        <article class="card" role="listitem" onclick="adicionarItem('Pizza Doce',35.90)">
+          <div class="thumb" style="background-image:url('https://www.academiaassai.com.br/sites/default/files/styles/noticia_1020x640/public/sabores_de_pizza_morango_com_chocolate.jpg?itok=DlQsbz89')"></div>
+          <div class="body">
+            <div class="name">Pizza Doce</div>
+            <div class="desc">Massa fina, chocolate e morangos.</div>
+            <div class="price">R$ 35,90</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer style="margin-top:28px; text-align:center; color:#777;">
+      © Pizzaria dos Maxes • Fotos ilustrativas
+    </footer>
+  </main>
+
+</body>
+</html>

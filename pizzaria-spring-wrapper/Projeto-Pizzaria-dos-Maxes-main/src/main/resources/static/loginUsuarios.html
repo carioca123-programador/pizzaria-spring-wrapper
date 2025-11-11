@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Usuários - Pizzaria dos Maxes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #c62828, #8e0000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      width: 360px;
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      color: #c62828;
+      margin-bottom: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: #c62828;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #a81414;
+    }
+
+    small {
+      display: block;
+      margin-top: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Cadastro de Usuário</h2>
+    <p>Preencha seus dados para acessar o sistema</p>
+
+    <form id="formUsuario">
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+      <input type="text" id="endereco" placeholder="Endereço" required>
+      <input type="tel" id="telefone" placeholder="Telefone" required>
+      
+      <select id="cargo" required>
+        <option value="">Selecione o cargo</option>
+        <option value="cliente">Cliente</option>
+        <option value="atendente">Atendente</option>
+      </select>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+
+
+    <small>Já possui conta? <a href="login.html">Entrar</a></small> </div>
+
+    
+
+
+
+
+    
+  <script>
+    document.getElementById("formUsuario").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const usuario = {
+        nome: document.getElementById("nome").value,
+        email: document.getElementById("email").value,
+        senha: document.getElementById("senha").value,
+        endereco: document.getElementById("endereco").value,
+        telefone: document.getElementById("telefone").value,
+        cargo: document.getElementById("cargo").value
+      };
+
+      // Simula o cadastro armazenando no localStorage
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+      alert("Usuário cadastrado com sucesso!");
+
+      // Redireciona conforme o cargo
+      if (usuario.cargo === "cliente") {
+        window.location.href = "cliente.html";
+      } else if (usuario.cargo === "atendente") {
+        window.location.href = "atendente.html";
+      } else {
+        alert("Cargo inválido!");
+      }
+    });
+  </script>
+</body>
+</html>

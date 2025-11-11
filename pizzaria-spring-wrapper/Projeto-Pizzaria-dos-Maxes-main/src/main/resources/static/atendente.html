@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Área do Atendente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #6d6d6d;
+      margin: 0;
+      padding: 20px;
+    }
+
+    
+    h2 {
+      color: #333;
+    }
+    #pedidos {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #pedidos th, #pedidos td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    #pedidos th {
+      background-color: #f0f0f0;
+    }
+    button {
+      background-color: #0077ff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #00ff0d;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <h2>📋 Painel do Atendente</h2>
+    <button onclick="logout()">Sair</button>
+  </div>
+  
+  <p>Bem-vindo, <span id="nomeAtendente"></span>!</p>
+  <p>Veja abaixo todos os pedidos realizados:</p>
+
+  <button onclick="carregarPedidos()">🔄 Atualizar Pedidos</button>
+  
+  <table id="pedidos">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuário</th>
+        <th>Produto</th>
+        <th>Preço</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaPedidos">
+      <tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <p><a href="/">🏠 Voltar ao Início</a></p>
+
+  <script>
+    // 🔐 Protege a página: só atendente pode acessar
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario || usuario.cargo !== "atendente") {
+      alert("Acesso negado! Somente atendentes podem acessar esta página.");
+      window.location.href = "/";
+    }
+
+    document.getElementById("nomeAtendente").textContent = usuario.nome;
+
+    async function carregarPedidos() {
+      try {
+        const res = await fetch("/api/pedidos");
+        const pedidos = await res.json();
+
+        const tbody = document.getElementById("tabelaPedidos");
+        tbody.innerHTML = "";
+
+        if (pedidos.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Nenhum pedido encontrado.</td></tr>`;
+          return;
+        }
+
+        pedidos.forEach(p => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${p.usuario ? p.usuario.nome : "—"}</td>
+            <td>${p.produto}</td>
+            <td>R$ ${p.preco.toFixed(2)}</td>
+            <td>${p.status}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Erro ao carregar pedidos:", err);
+        alert("Erro ao carregar pedidos do servidor.");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("usuario");
+      window.location.href = "/";
+    }
+
+    // Carrega ao abrir
+    carregarPedidos();
+  </script>
+</body>
+</html>
